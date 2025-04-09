@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INEX Reading List</title>
+    <!-- SUPABASE JS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* CSS Styles */
+        :root {
+            --bg-color: #0d1117;
+            --card-bg-color: #161b22;
+            --border-color: #30363d;
+            --text-color: #c9d1d9;
+            --text-secondary-color: #8b949e;
+            --accent-color: #238636;
+            --accent-hover-color: #2ea043;
+            --link-color: #58a6ff;
+            --error-color: #f85149;
+            --success-color: var(--accent-color);
+            --font-family: 'Poppins', sans-serif;
+            --border-radius: 6px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            font-size: 16px;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--card-bg-color);
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap; /* Allow wrapping */
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem; /* Spacing when wrapped */
+        }
+
+        .logo-icon {
+            color: var(--accent-color);
+            margin-right: 0.5rem;
+            font-weight: bold;
+        }
+
+        .auth-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .auth-info span {
+            color: var(--text-secondary-color);
+            font-size: 0.9rem;
+        }
+
+        #sign-out-button {
+            background: none;
+            border: 1px solid var(--text-secondary-color);
+            color: var(--text-secondary-color);
+            padding: 0.3rem 0.8rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        #sign-out-button:hover {
+            border-color: var(--text-color);
+            color: var(--text-color);
+        }
+
+        main {
+            flex-grow: 1;
+            padding: 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        h1, h2 {
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            color: var(--text-secondary-color);
+            margin-bottom: 1rem;
+        }
+
+        section {
+            background-color: var(--card-bg-color);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+        }
+
+        /* Auth Forms */
+        #auth-section {
+            max-width: 400px;
+            margin: 2rem auto;
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .auth-form input[type="email"],
+        .auth-form input[type="password"] {
+            padding: 0.75rem;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            color: var(--text-color);
+            font-size: 1rem;
+        }
+
+        .auth-form input:focus {
+             outline: none;
+            border-color: var(--link-color);
+            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.2);
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: space-between;
+        }
+
+        .auth-form button {
+            flex-grow: 1;
+            padding: 0.75rem;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.2s ease;
+        }
+         .auth-form button:hover {
+             background-color: var(--accent-hover-color);
+         }
+         .auth-form button:disabled {
+             background-color: var(--text-secondary-color);
+             cursor: not-allowed;
+         }
+
+        /* Add Book Form Styling */
+        #add-book-form {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        #add-book-form input[type="text"] {
+            flex-grow: 1;
+            padding: 0.75rem;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            color: var(--text-color);
+            font-size: 1rem;
+            min-width: 200px;
+        }
+
+        #add-book-form input[type="text"]:focus {
+            outline: none;
+            border-color: var(--link-color);
+            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.2);
+        }
+
+        #add-book-form button[type="submit"] {
+            padding: 0.75rem 1.5rem;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.2s ease;
+            white-space: nowrap;
+        }
+         #add-book-form button[type="submit"]:hover {
+             background-color: var(--accent-hover-color);
+         }
+         #add-book-form button[type="submit"]:disabled {
+             background-color: var(--text-secondary-color);
+             cursor: not-allowed;
+         }
+
+        /* Book List Styling */
+        #loading-message {
+            color: var(--text-secondary-color);
+            font-style: italic;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        #book-list {
+            margin-top: 1rem;
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+
+        .book-item {
+            background-color: var(--bg-color);
+            padding: 1rem 1.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: box-shadow 0.2s ease;
+        }
+
+        .book-item:hover {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .book-item .details {
+            margin-bottom: 1rem;
+        }
+
+        .book-item h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 0.25rem;
+            word-break: break-word;
+        }
+
+        .book-item p {
+            font-size: 0.95rem;
+            color: var(--text-secondary-color);
+            margin-bottom: 0.75rem;
+        }
+
+        .book-item .actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: auto;
+        }
+
+        .book-item select {
+            padding: 0.4rem 0.6rem;
+            background-color: var(--card-bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            color: var(--text-color);
+            font-size: 0.9rem;
+            cursor: pointer;
+            max-width: 150px;
+        }
+
+        .book-item select:focus {
+            outline: none;
+            border-color: var(--link-color);
+        }
+
+        .book-item select:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .book-item .delete-btn {
+            background-color: transparent;
+            color: var(--error-color);
+            border: 1px solid var(--error-color);
+            border-radius: var(--border-radius);
+            padding: 0.4rem 0.8rem;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .book-item .delete-btn:hover {
+            background-color: rgba(248, 81, 73, 0.1);
+            color: #ff6b61;
+        }
+         .book-item .delete-btn:disabled {
+             opacity: 0.7;
+             cursor: not-allowed;
+             background-color: transparent !important; /* Keep transparent */
+             color: var(--text-secondary-color);
+             border-color: var(--text-secondary-color);
+         }
+
+
+        /* Message Styling */
+        .message {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            border-radius: var(--border-radius);
+            text-align: center;
+            font-weight: 500;
+            display: none; /* Hidden by default */
+            word-wrap: break-word;
+        }
+        .message.success {
+            background-color: rgba(35, 134, 54, 0.1);
+            border: 1px solid var(--success-color);
+            color: var(--success-color);
+            display: block;
+        }
+        .message.error {
+            background-color: rgba(248, 81, 73, 0.1);
+            border: 1px solid var(--error-color);
+            color: var(--error-color);
+            display: block;
+        }
+
+        /* Utility Classes */
+        .hidden {
+            display: none !important; /* Force hide */
+        }
+
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary-color);
+            border-top: 1px solid var(--border-color);
+            background-color: var(--card-bg-color);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            header {
+                padding: 1rem;
+                /* Keep logo and auth info on same line if possible, wrap if needed */
+            }
+            main {
+                padding: 1rem;
+            }
+            h1 { font-size: 2rem; }
+            h2 { font-size: 1.5rem; }
+            #add-book-form {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            #add-book-form button[type="submit"] {
+                width: 100%;
+            }
+             #book-list {
+                grid-template-columns: 1fr; /* Single column */
+            }
+            .auth-buttons {
+                flex-direction: column; /* Stack auth buttons */
+            }
+        }
+         @media (max-width: 480px) {
+             .auth-info {
+                 margin-top: 0.5rem; /* Add space below logo when wrapped */
+                 width: 100%; /* Take full width when wrapped */
+                 justify-content: space-between;
+             }
+         }
+
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+             <span class="logo-icon">&lt;/&gt;</span> INEX Reading List
+        </div>
+        <div class="auth-info">
+            <span id="user-email" class="hidden"></span>
+            <button id="sign-out-button" class="hidden">Sign Out</button>
+        </div>
+    </header>
+
+    <main>
+        <!-- Authentication Section -->
+        <section id="auth-section">
+            <h2>Welcome</h2>
+            <form id="auth-form" class="auth-form">
+                <input type="email" id="auth-email" placeholder="Email" required>
+                <input type="password" id="auth-password" placeholder="Password" required minlength="6">
+                 <div class="auth-buttons">
+                     <button type="button" id="sign-in-button">Sign In</button>
+                    <button type="button" id="sign-up-button">Sign Up</button>
+                 </div>
+
+            </form>
+            <p id="auth-message" class="message"></p>
+        </section>
+
+        <!-- Reading List Section (Hidden initially) -->
+        <div id="reading-list-content" class="hidden">
+            <section class="add-book">
+                <h2>Add a New Book</h2>
+                <form id="add-book-form">
+                    <input type="text" id="book-title" placeholder="Book Title" required>
+                    <input type="text" id="book-author" placeholder="Author" required>
+                    <button type="submit" id="add-book-button">Add Book</button>
+                </form>
+                 <p id="form-message" class="message"></p>
+            </section>
+
+            <section class="book-list-section">
+                <h2>My Books</h2>
+                <div id="loading-message">Loading books...</div>
+                <div id="book-list">
+                    <!-- Book items will be loaded here -->
+                </div>
+                 <p id="list-message" class="message error"></p>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 INEX Reading List</p>
+    </footer>
+
+    <script>
+        // JavaScript Logic
+        const SUPABASE_URL = 'https://crwplwcyxcuczbzzumln.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNyd3Bsd2N5eGN1Y3pienp1bWxuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDMzNjYyOTIsImV4cCI6MjA1ODk0MjI5Mn0.L0bWva2oQBd_i10-Qn0t8leYmpzGMu5_UqI9f41CR2Q';
+
+        const { createClient } = supabase;
+        const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        const TABLE_NAME = 'inexrt_books';
+
+        // --- DOM Elements ---
+        // Auth
+        const authSection = document.getElementById('auth-section');
+        const authForm = document.getElementById('auth-form');
+        const authEmailInput = document.getElementById('auth-email');
+        const authPasswordInput = document.getElementById('auth-password');
+        const signInButton = document.getElementById('sign-in-button');
+        const signUpButton = document.getElementById('sign-up-button');
+        const signOutButton = document.getElementById('sign-out-button');
+        const userEmailSpan = document.getElementById('user-email');
+        const authMessage = document.getElementById('auth-message');
+
+        // Reading List
+        const readingListContent = document.getElementById('reading-list-content');
+        const addBookForm = document.getElementById('add-book-form');
+        const bookTitleInput = document.getElementById('book-title');
+        const bookAuthorInput = document.getElementById('book-author');
+        const addBookButton = document.getElementById('add-book-button');
+        const bookListDiv = document.getElementById('book-list');
+        const loadingMessage = document.getElementById('loading-message');
+        const formMessage = document.getElementById('form-message');
+        const listMessage = document.getElementById('list-message');
+
+        // --- Utility Functions ---
+        function showMessage(element, text, type = 'error', duration = 4000) {
+            element.textContent = text;
+            element.className = `message ${type}`;
+            element.style.display = 'block';
+
+            if (duration > 0) {
+                setTimeout(() => {
+                    if (element.textContent === text) { // Only hide if message hasn't changed
+                        element.style.display = 'none';
+                        element.textContent = '';
+                        element.className = 'message';
+                    }
+                }, duration);
+            }
+        }
+
+        function escapeHtml(str) {
+            if (str === null || str === undefined) return '';
+            return str.toString()
+                 .replace(/&/g, "&amp;")
+                 .replace(/</g, "&lt;")
+                 .replace(/>/g, "&gt;")
+                 .replace(/"/g, "&quot;")
+                 .replace(/'/g, "&#039;");
+        }
+
+        function toggleAuthButtons(enable) {
+             signInButton.disabled = !enable;
+             signUpButton.disabled = !enable;
+             signInButton.textContent = enable ? 'Sign In' : 'Processing...';
+             // Keep sign up text consistent or change similarly if needed
+        }
+
+        function toggleAddBookButton(enable) {
+            addBookButton.disabled = !enable;
+            addBookButton.textContent = enable ? 'Add Book' : 'Adding...';
+        }
+
+        // --- Authentication Functions ---
+        async function handleSignUp() {
+            const email = authEmailInput.value.trim();
+            const password = authPasswordInput.value.trim();
+            if (!email || !password) {
+                showMessage(authMessage, 'Please enter email and password.', 'error');
+                return;
+            }
+            if (password.length < 6) {
+                 showMessage(authMessage, 'Password must be at least 6 characters.', 'error');
+                 return;
+            }
+
+            toggleAuthButtons(false);
+            showMessage(authMessage, '', 'success', 0); // Clear previous messages
+
+            try {
+                const { data, error } = await db.auth.signUp({ email, password });
+                if (error) throw error;
+                // Sign up might require email confirmation depending on Supabase project settings
+                showMessage(authMessage, 'Sign up successful! Check your email for verification if required.', 'success', 0); // More permanent message
+            } catch (error) {
+                console.error('Sign up error:', error);
+                showMessage(authMessage, `Sign up failed: ${error.message}`, 'error', 0);
+            } finally {
+                toggleAuthButtons(true);
+            }
+        }
+
+        async function handleSignIn() {
+            const email = authEmailInput.value.trim();
+            const password = authPasswordInput.value.trim();
+             if (!email || !password) {
+                showMessage(authMessage, 'Please enter email and password.', 'error');
+                return;
+            }
+
+            toggleAuthButtons(false);
+            showMessage(authMessage, '', 'success', 0); // Clear previous messages
+
+            try {
+                const { data, error } = await db.auth.signInWithPassword({ email, password });
+                if (error) throw error;
+                // onAuthStateChange will handle UI update
+                 console.log('Sign in successful');
+                 // Clear form potentially, or let onAuthStateChange handle hiding it
+                 authForm.reset();
+            } catch (error) {
+                console.error('Sign in error:', error);
+                showMessage(authMessage, `Sign in failed: ${error.message}`, 'error', 0);
+                 toggleAuthButtons(true); // Re-enable only on error
+            }
+            // No finally needed here for buttons, as success triggers state change
+        }
+
+        async function handleSignOut() {
+            signOutButton.disabled = true; // Disable button immediately
+            try {
+                const { error } = await db.auth.signOut();
+                if (error) throw error;
+                // onAuthStateChange will handle UI update
+            } catch (error) {
+                console.error('Sign out error:', error);
+                showMessage(listMessage, `Sign out failed: ${error.message}`, 'error');
+                 signOutButton.disabled = false; // Re-enable only on error
+            }
+        }
+
+        // --- Reading List CRUD Functions ---
+        async function fetchAndDisplayBooks() {
+            loadingMessage.style.display = 'block';
+            bookListDiv.innerHTML = '';
+            listMessage.style.display = 'none';
+
+            try {
+                // RLS handles filtering by user_id automatically
+                const { data: books, error } = await db
+                    .from(TABLE_NAME)
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                if (books && books.length > 0) {
+                    displayBooks(books);
+                } else {
+                    bookListDiv.innerHTML = '<p>No books in your list yet. Add one above!</p>';
+                }
+
+            } catch (error) {
+                console.error('Error fetching books:', error);
+                showMessage(listMessage, `Error loading books: ${error.message}`, 'error', 0);
+            } finally {
+                loadingMessage.style.display = 'none';
+            }
+        }
+
+        function displayBooks(books) {
+            bookListDiv.innerHTML = '';
+            books.forEach(book => {
+                const bookItem = document.createElement('div');
+                bookItem.classList.add('book-item');
+                bookItem.setAttribute('data-id', book.id);
+
+                const statuses = ['Want to Read', 'Reading', 'Finished'];
+                const optionsHtml = statuses.map(status =>
+                    `<option value="${status}" ${book.status === status ? 'selected' : ''}>${status}</option>`
+                ).join('');
+
+                bookItem.innerHTML = `
+                    <div class="details">
+                        <h3>${escapeHtml(book.title)}</h3>
+                        <p>By ${escapeHtml(book.author)}</p>
+                    </div>
+                    <div class="actions">
+                        <select class="status-select" data-id="${book.id}">
+                            ${optionsHtml}
+                        </select>
+                        <button class="delete-btn" data-id="${book.id}">Delete</button>
+                    </div>
+                `;
+
+                // Attach event listeners within the loop for each item
+                 bookItem.querySelector('.status-select').addEventListener('change', handleStatusChange);
+                 bookItem.querySelector('.delete-btn').addEventListener('click', handleDeleteBook);
+
+                bookListDiv.appendChild(bookItem);
+            });
+        }
+
+        async function handleAddBook(event) {
+            event.preventDefault();
+            formMessage.style.display = 'none';
+
+            const title = bookTitleInput.value.trim();
+            const author = bookAuthorInput.value.trim();
+
+            if (!title || !author) {
+                showMessage(formMessage, 'Please enter both title and author.', 'error');
+                return;
+            }
+
+            toggleAddBookButton(false);
+
+            try {
+                 // Get current user ID - important for INSERT with RLS
+                const { data: { user } } = await db.auth.getUser();
+                if (!user) throw new Error("User not logged in."); // Should not happen if UI is correct
+
+                const { data, error } = await db
+                    .from(TABLE_NAME)
+                    .insert([{
+                        title,
+                        author,
+                        status: 'Want to Read', // Default status
+                        user_id: user.id // Associate with the logged-in user
+                    }])
+                    .select(); // Return the inserted row
+
+                if (error) throw error;
+
+                console.log('Book added:', data);
+                showMessage(formMessage, 'Book added successfully!', 'success');
+                addBookForm.reset(); // Clear the form
+                await fetchAndDisplayBooks(); // Refresh list
+
+            } catch (error) {
+                console.error('Error adding book:', error);
+                showMessage(formMessage, `Error adding book: ${error.message}`, 'error');
+            } finally {
+                toggleAddBookButton(true);
+            }
+        }
+
+        async function handleStatusChange(event) {
+            const selectElement = event.target;
+            const bookId = selectElement.dataset.id;
+            const newStatus = selectElement.value;
+
+            selectElement.disabled = true; // Disable select during update
+
+            try {
+                // RLS ensures only the owner can update
+                const { error } = await db
+                    .from(TABLE_NAME)
+                    .update({ status: newStatus })
+                    .eq('id', bookId);
+
+                if (error) throw error;
+
+                console.log(`Book ID ${bookId} status updated to ${newStatus}`);
+                // Optional visual feedback
+                const bookItem = selectElement.closest('.book-item');
+                 if(bookItem) {
+                    bookItem.style.transition = 'background-color 0.3s ease';
+                    bookItem.style.backgroundColor = 'rgba(35, 134, 54, 0.2)';
+                    setTimeout(() => { bookItem.style.backgroundColor = ''; }, 500);
+                 }
+
+            } catch (error) {
+                console.error('Error updating status:', error);
+                showMessage(listMessage, `Failed to update status: ${error.message}`, 'error');
+                // Optional: Revert dropdown value on error
+                // await fetchAndDisplayBooks(); // Full refresh could revert
+            } finally {
+                 selectElement.disabled = false; // Re-enable select
+            }
+        }
+
+         async function handleDeleteBook(event) {
+            const buttonElement = event.target;
+            const bookId = buttonElement.dataset.id;
+            const bookItemElement = buttonElement.closest('.book-item');
+
+            if (!bookId || !bookItemElement || !confirm('Are you sure you want to delete this book?')) {
+                return;
+            }
+
+            buttonElement.disabled = true;
+            buttonElement.textContent = 'Deleting...';
+             // Disable status select too during delete
+             const selectElement = bookItemElement.querySelector('.status-select');
+             if(selectElement) selectElement.disabled = true;
+
+
+            try {
+                // RLS ensures only the owner can delete
+                const { error } = await db
+                    .from(TABLE_NAME)
+                    .delete()
+                    .eq('id', bookId);
+
+                if (error) throw error;
+
+                console.log(`Book ID ${bookId} deleted`);
+                // Animate removal
+                bookItemElement.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                bookItemElement.style.opacity = '0';
+                bookItemElement.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    bookItemElement.remove();
+                    if (bookListDiv.children.length === 0) {
+                        bookListDiv.innerHTML = '<p>No books in your list yet. Add one above!</p>';
+                    }
+                }, 300);
+                showMessage(listMessage, 'Book deleted successfully!', 'success');
+
+            } catch (error) {
+                console.error('Error deleting book:', error);
+                showMessage(listMessage, `Failed to delete book: ${error.message}`, 'error');
+                 // Re-enable buttons on error
+                 buttonElement.disabled = false;
+                 buttonElement.textContent = 'Delete';
+                 if(selectElement) selectElement.disabled = false;
+            }
+        }
+
+
+        // --- State Management & Event Listeners ---
+
+        // Listen for authentication state changes
+        db.auth.onAuthStateChange((event, session) => {
+            console.log('Auth event:', event, session);
+            const user = session?.user;
+
+            // Clear all messages on auth change
+            authMessage.style.display = 'none';
+            formMessage.style.display = 'none';
+            listMessage.style.display = 'none';
+
+
+            if (user) {
+                // User is logged in
+                authSection.classList.add('hidden');
+                readingListContent.classList.remove('hidden');
+                userEmailSpan.textContent = user.email;
+                userEmailSpan.classList.remove('hidden');
+                signOutButton.classList.remove('hidden');
+                signOutButton.disabled = false; // Ensure enabled
+
+                // Fetch books for the logged-in user
+                fetchAndDisplayBooks();
+            } else {
+                // User is logged out
+                authSection.classList.remove('hidden');
+                readingListContent.classList.add('hidden');
+                userEmailSpan.classList.add('hidden');
+                signOutButton.classList.add('hidden');
+                bookListDiv.innerHTML = ''; // Clear book list visually
+                authForm.reset(); // Reset auth form fields
+                toggleAuthButtons(true); // Ensure auth buttons are enabled
+            }
+        });
+
+        // Add event listeners
+        signUpButton.addEventListener('click', handleSignUp);
+        signInButton.addEventListener('click', handleSignIn);
+        signOutButton.addEventListener('click', handleSignOut);
+        addBookForm.addEventListener('submit', handleAddBook);
+
+        // Initial check (if user is already logged in from a previous session)
+        // The onAuthStateChange listener usually handles this automatically on page load.
+
+    </script>
+</body>
+</html>
